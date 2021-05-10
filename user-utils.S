@@ -56,6 +56,24 @@ ENTRY(getpid)
 	popl %ebp
 	ret
 
+/* int create_screen() */
+ENTRY(create_screen)
+	pushl %ebp
+	movl %esp, %ebp
+	movl $20, %eax
+	call syscall_sysenter
+	popl %ebp
+	ret
+
+/* int set_focus() */
+ENTRY(set_focus)
+	pushl %ebp
+	movl %esp, %ebp
+	movl $20, %eax
+	call syscall_sysenter
+	popl %ebp
+	ret
+
 /* int fork() */
 ENTRY(fork)
 	pushl %ebp

@@ -1,0 +1,28 @@
+{
+    "files.associations": {
+        "*.pl": "prolog",
+        "array": "c",
+        "*.tcc": "c",
+        "deque": "c",
+        "string": "c",
+        "unordered_map": "c",
+        "vector": "c",
+        "functional": "c",
+        "iterator": "c",
+        "memory_resource": "c",
+        "optional": "c",
+        "memory": "c",
+        "numeric": "c",
+        "ostream": "c",
+        "ranges": "c",
+        "streambuf": "c",
+        "tuple": "c",
+        "utility": "c",
+        "random": "c",
+        "io.h": "c",
+        "system_error": "c",
+        "exception": "cpp",
+        "iosfwd": "cpp",
+        "new": "cpp"
+    }
+}
