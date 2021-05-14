@@ -7,10 +7,11 @@
 
 #include <types.h>
 #include <list.h>
+#include <sched.h>
 
 #define NUM_COLUMNS 80
 #define NUM_ROWS    25
-#define NUM_SCREENS 1000
+#define NUM_SCREENS 10
 
 struct screen {
   int ID;			/* Screen ID. This MUST be the first field of the struct. */
@@ -20,7 +21,7 @@ struct screen {
 };
 
 struct screen* current_screen;
-struct screen* all_screens[1000];
+struct screen all_screens[NUM_SCREENS];
 
 /** Screen functions **/
 /**********************/
@@ -30,10 +31,11 @@ void printc(char c);
 void printc_xy(Byte x, Byte y, char c);
 void printk(char *string);
 
+int create_new_screen(struct task_struct *c);
 void delete();
 void move(int x, int y);
 void change_color();
 struct screen* get_current_screen();
-struct screen* new_screen(int pid);
+
 
 #endif  /* __IO_H__ */

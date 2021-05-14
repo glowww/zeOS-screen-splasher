@@ -49,30 +49,16 @@ int sys_getpid()
 	return current()->PID;
 }
 
+extern int global_screen_id;
+
 int sys_create_screen()
 {
-  printc_xy(0, 0, 'A');
-  struct task_struct *c = current();
-  int length = sizeof c->screens / sizeof c->screens[0];
-
-  if (length == 10){
-    return -ENOMEM;
-  }
-
-  c->screens[length] = new_screen(c->PID);
-  return c->screens[length]->ID;
+  return create_new_screen(current());
 }
 
 int sys_set_focus(int c)
 {
-  for(int i; i < NUM_SCREENS; i++)
-  {
-    if (all_screens[i]->ID == c) {
-      current_screen = all_screens[i];
-      return c;
-    }
-  }
-	return -ENOENT;
+  return io_set_focus(current(), c);
 }
 
 int global_PID=1000;

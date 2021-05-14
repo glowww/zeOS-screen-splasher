@@ -13,6 +13,7 @@
 
 #define NR_TASKS      10
 #define KERNEL_STACK_SIZE	1024
+#define SCREENS_PER_TASK 10
 
 enum state_t { ST_RUN, ST_READY, ST_BLOCKED };
 
@@ -24,8 +25,7 @@ struct task_struct {
   enum state_t state;		/* State of the process */
   int total_quantum;		/* Total quantum of the process */
   struct stats p_stats;		/* Process stats */
-  struct screen *screens[10];
-  int focus;
+  struct screen *screens[SCREENS_PER_TASK];
 };
 
 union task_union {

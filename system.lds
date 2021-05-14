@@ -21,5 +21,6 @@ SECTIONS
 
   . = ALIGN(4096);              /* task_structs array*/
   .data.task : { *(.data.task) }
+  .data.screen : { *(.data.screen) }
 
 }

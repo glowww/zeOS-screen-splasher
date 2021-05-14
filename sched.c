@@ -168,7 +168,7 @@ void init_idle (void)
 
   c->total_quantum=DEFAULT_QUANTUM;
 
-  c->screens[0] = new_screen(c->PID);
+  create_new_screen(c);
 
   init_stats(&c->p_stats);
 
@@ -194,7 +194,7 @@ void init_task1(void)
   c->PID=1;
 
   c->total_quantum=DEFAULT_QUANTUM;
-  c->screens[0] = new_screen(c->PID);
+  create_new_screen(c);
   c->state=ST_RUN;
 
   remaining_quantum=c->total_quantum;

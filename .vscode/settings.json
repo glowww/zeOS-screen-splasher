@@ -23,6 +23,10 @@
         "system_error": "c",
         "exception": "cpp",
         "iosfwd": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "libc.h": "c",
+        "cstdlib": "c",
+        "sched.h": "c",
+        "errno.h": "c"
     }
 }
