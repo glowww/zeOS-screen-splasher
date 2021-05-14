@@ -49,6 +49,18 @@ int sys_getpid()
 	return current()->PID;
 }
 
+extern int global_screen_id;
+
+int sys_create_screen()
+{
+  return create_new_screen(current());
+}
+
+int sys_set_focus(int c)
+{
+  return io_set_focus(current(), c);
+}
+
 int global_PID=1000;
 
 int ret_from_fork()

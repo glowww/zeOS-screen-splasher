@@ -17,11 +17,11 @@ Register    idtR;
 char char_map[] =
 {
   '\0','\0','1','2','3','4','5','6',
-  '7','8','9','0','\'','¡','\0','\0',
+  '7','8','9','0','\'','ï¿½','\0','\0',
   'q','w','e','r','t','y','u','i',
   'o','p','`','+','\0','\0','a','s',
-  'd','f','g','h','j','k','l','ñ',
-  '\0','º','\0','ç','z','x','c','v',
+  'd','f','g','h','j','k','l','ï¿½',
+  '\0','ï¿½','\0','ï¿½','z','x','c','v',
   'b','n','m',',','.','-','\0','*',
   '\0','\0','\0','\0','\0','\0','\0','\0',
   '\0','\0','\0','\0','\0','\0','\0','7',
@@ -44,8 +44,19 @@ void clock_routine()
 void keyboard_routine()
 {
   unsigned char c = inb(0x60);
-  
-  if (c&0x80) printc_xy(0, 0, char_map[c&0x7f]);
+
+  if (c&0x80) {
+
+    int key = c&0x7f;
+
+    if (key == 14) delete();
+    else if (key == 15) focus_next_screen(current());  // TODO: ALT key too
+    else if (key == 77) move(1, 0);
+    else if (key == 75) move(-1, 0);
+    else if (key == 72) move(0, -1);
+    else if (key == 80) move(0, 1);
+    else if (key != 96) printc_xy(current_screen->x, current_screen->y, char_map[key]);
+  }
 }
 
 void setInterruptHandler(int vector, void (*handler)(), int maxAccessibleFromPL)

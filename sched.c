@@ -168,6 +168,8 @@ void init_idle (void)
 
   c->total_quantum=DEFAULT_QUANTUM;
 
+  create_new_screen(c);
+
   init_stats(&c->p_stats);
 
   allocate_DIR(c);
@@ -194,6 +196,8 @@ void init_task1(void)
   c->total_quantum=DEFAULT_QUANTUM;
 
   c->state=ST_RUN;
+
+  create_new_screen(c);
 
   remaining_quantum=c->total_quantum;
 

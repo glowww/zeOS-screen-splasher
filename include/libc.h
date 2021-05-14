@@ -20,6 +20,10 @@ void perror();
 
 int getpid();
 
+int create_screen();
+
+int set_focus();
+
 int fork();
 
 void exit();
