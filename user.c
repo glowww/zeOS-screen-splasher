@@ -12,8 +12,8 @@ int __attribute__ ((__section__(".text.main")))
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
   
-  //test_create_screen();
-  test_set_focus();
+  test_create_screen();
+  //test_set_focus();
   // test_move_cursor();
 
   while(1) {
