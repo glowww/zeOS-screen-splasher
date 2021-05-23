@@ -14,7 +14,6 @@ int __attribute__ ((__section__(".text.main")))
   // Change this variable to select a different test
   int test_selected = 1;
 
-  user_print("HOLA");
   if (test_selected == 1) test_create_screen();
   else if (test_selected == 2) test_set_focus();
   else if (test_selected == 3) test_move_cursor();
