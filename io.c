@@ -21,7 +21,7 @@ Byte inb (unsigned short port)
   return v;
 }
 
-void printc(char c)
+void printc_with_color(char c, int color)
 {
      __asm__ __volatile__ ( "movb %0, %%al; outb $0xe9" ::"a"(c));
   if (c=='\n')
@@ -31,20 +31,22 @@ void printc(char c)
   }
   else
   {
-    Word ch = (Word) (c & 0x00FF) | 0x0200;
-    DWord screen = 0xb8000 + (current_screen->y * NUM_COLUMNS + current_screen->x) * 2;
+    Word ch = (Word) (c & 0x00FF) | color;
+    Word *screen = (Word *) 0xb8000;
     
+    screen[current_screen->y * NUM_COLUMNS + current_screen->x] = ch;
+
     if (++current_screen->x >= NUM_COLUMNS)
     {
       current_screen->x = 0;
       current_screen->y=(current_screen->y+1)%NUM_ROWS;
     }
-
-    // current_screen->content[current_screen->x][current_screen->y] = c;
-
-    asm("movw %0, (%1)" : : "g"(ch), "g"(screen));
   }
+}
 
+void printc(char c)
+{
+  printc_with_color(c, DEFAULT_COLOR);
 }
 
 void printc_xy(Byte mx, Byte my, char c)
@@ -55,6 +57,8 @@ void printc_xy(Byte mx, Byte my, char c)
   current_screen->x=mx;
   current_screen->y=my;
   printc(c);
+  current_screen->x=cx;
+  current_screen->y=cy;
 }
 
 void printk(char *string)
@@ -67,7 +71,6 @@ void printk(char *string)
 
 void delete()
 {
-  current_screen->content[current_screen->x][current_screen->y] = NULL;
   move(-1, 0);
   printc(NULL);
   move(-1, 0);
@@ -76,11 +79,20 @@ void delete()
 
 void move(int x, int y)
 {
-  current_screen->x += x;
+  move_x(current_screen->x + x);
+  move_y(current_screen->y + y);
+}
+
+void move_x(int x)
+{
+  current_screen->x = x;
   if (current_screen->x >= NUM_COLUMNS) current_screen->x = NUM_COLUMNS - 1;
   if (current_screen->x < 0) current_screen->x = 0;
+}
 
-  current_screen->y += y;
+void move_y(int y)
+{
+  current_screen->y = y;
   if (current_screen->y >= NUM_ROWS) current_screen->y = NUM_ROWS - 1;
   if (current_screen->y < 0) current_screen->y = 0;
 }
@@ -101,14 +113,9 @@ int create_new_screen(struct task_struct *c){
   all_screens[global_screen_id].ID = global_screen_id;
   all_screens[global_screen_id].PID = c->PID;
   all_screens[global_screen_id].x = 0;
-  all_screens[global_screen_id].y = 19;
+  all_screens[global_screen_id].y = 0;
 
-  for(int i = 0; i < NUM_COLUMNS; i++){
-    for(int j = 0; j < NUM_ROWS; j++){
-      all_screens[global_screen_id].content[i][j] = NULL;
-    }
-  }
-
+  // TODO: Store it in the process and reference it from all_screens
   c->screens[empty_screen] = &all_screens[global_screen_id];
 
   // Only if it's the first screen ever created
@@ -119,8 +126,6 @@ int create_new_screen(struct task_struct *c){
 
 int focus_next_screen(struct task_struct *c)
 {
-
-  // create_new_screen(c);
   
   int focus = 0;
   int num_of_screens = sizeof c->screens / sizeof *c->screens;
@@ -149,16 +154,18 @@ int io_set_focus(struct task_struct *t, int c)
         (c > global_screen_id && all_screens[i].ID > 0 || all_screens[i].ID == c)
       ) 
     {
+      // Save screen content
+      copy_data((Word *) 0xb8000, current_screen->content, sizeof(current_screen->content));
+
+      // Change focus
       current_screen = &all_screens[i];
 
-      for(int i = 0; i < NUM_COLUMNS; i++){
-        for(int j = 0; j < NUM_ROWS; j++){
-          printc_xy(i, j, current_screen->content[current_screen->x][current_screen->y]);
-        }
-      }
+      // Load new screen content
+      copy_data(current_screen->content, (Word *) 0xb8000, sizeof(current_screen->content));
 
       char a[100]; itoa(all_screens[i].ID, a, 100);
       char b[100]; itoa(all_screens[i].PID, b, 100);
+
       printk("\nScreen ID: "); printk(a); 
       printk("\nPID: "); printk(b);
 

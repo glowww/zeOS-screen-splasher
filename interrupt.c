@@ -49,12 +49,7 @@ void keyboard_routine()
 
     int key = c&0x7f;
 
-    if (key == 14) delete();
-    else if (key == 15) focus_next_screen(current());  // TODO: ALT key too
-    else if (key == 77) move(1, 0);
-    else if (key == 75) move(-1, 0);
-    else if (key == 72) move(0, -1);
-    else if (key == 80) move(0, 1);
+    if (key == 15) focus_next_screen(current());  // TODO: ALT key too
     else if (key != 96) printc_xy(current_screen->x, current_screen->y, char_map[key]);
   }
 }
