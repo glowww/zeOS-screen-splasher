@@ -33,14 +33,17 @@ struct screen {
 struct screen* current_screen;
 struct screen all_screens[NUM_SCREENS];
 
+int global_screen_id;
+
 /** Screen functions **/
 /**********************/
 
 Byte inb (unsigned short port);
-void printc(char c);
-void printc_with_color(char c, int color);
+void printc(char c, int screen_id);
+void printc_with_color(char c, int color, int screen_id);
 void printc_xy(Byte x, Byte y, char c);
 void printk(char *string);
+void printk_screen(char *string, int screen_id);
 
 int create_new_screen(struct task_struct *c);
 void delete();

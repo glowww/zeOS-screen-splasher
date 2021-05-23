@@ -3,7 +3,8 @@
 
 char buff[24];
 
-int pid;
+// Screen 1 is the physical one and Screen 2 is the one from the idle process
+#define FIRST_SCREEN 3
 
 int __attribute__ ((__section__(".text.main")))
   main(void)
@@ -12,20 +13,21 @@ int __attribute__ ((__section__(".text.main")))
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
   // Change this variable to select a different test
-  int test_selected = 1;
+  int test_selected = 6;
 
   if (test_selected == 1) test_create_screen();
   else if (test_selected == 2) test_set_focus();
   else if (test_selected == 3) test_move_cursor();
   else if (test_selected == 4) test_del_char();
   else if (test_selected == 5) test_colors();
+  else if (test_selected == 6) test_write_in_background();
 
   while(1) {}
 }
 
 void test_del_char()
 {
-  set_focus(2);
+  set_focus(FIRST_SCREEN);
   user_print("\n\n");
 
   char* hidden = "You will never see this.";
@@ -40,8 +42,8 @@ void test_del_char()
 
 void test_colors()
 {
-  set_focus(2);
-  user_print("\n\nTesting colors\n\n");
+  set_focus(FIRST_SCREEN);
+  user_print("\n\n\033[31mT\033[32me\033[33ms\033[34mt\033[35mi\033[36mn\033[37mg \033[31mc\033[32mo\033[33ml\033[34mo\033[35mr\033[36ms\n\n");
 
   user_print("\033[37m BLACK   RED   GREEN ORANGE  BLUE  MAGENTA CYAN  WHITE  DEFAULT  \n");
   user_print("\033[30mBLACK  \033[41mBLACK  \033[42mBLACK  \033[43mBLACK  \033[44mBLACK  \033[45mBLACK  \033[46mBLACK  \033[47mBLACK  \033[49mBLACK  \n");
@@ -53,12 +55,11 @@ void test_colors()
   user_print("\033[36mCYAN   \033[41mCYAN   \033[42mCYAN   \033[43mCYAN   \033[44mCYAN   \033[45mCYAN   \033[46mCYAN   \033[47mCYAN   \033[49mCYAN   \n");
   user_print("\033[37mWHITE  \033[41mWHITE  \033[42mWHITE  \033[43mWHITE  \033[44mWHITE  \033[45mWHITE  \033[46mWHITE  \033[47mWHITE  \033[49mWHITE  \n");
   user_print("\033[39mDEFAULT\033[41mDEFAULT\033[42mDEFAULT\033[43mDEFAULT\033[44mDEFAULT\033[45mDEFAULT\033[46mDEFAULT\033[47mDEFAULT\033[49mDEFAULT\n");
-
 }
 
 void test_move_cursor()
 {
-  set_focus(2);
+  set_focus(FIRST_SCREEN);
   user_print("\n\nTesting move cursor");
 
   user_print("\033[2;6HA\033[3;7HB\033[4;8HC");
@@ -69,11 +70,10 @@ void test_move_cursor()
 
 void test_create_screen()
 {
-  user_print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-  user_print("Testing create screen");
+  user_print("\n\nTesting create screen");
 
   int new_screens = 6;
-  int number_of_screens = 2;
+  int number_of_screens = 3;
   int expected = number_of_screens + new_screens;
 
   for(int i = 0; i < new_screens; i++){
@@ -91,7 +91,20 @@ void test_set_focus()
   create_screen();
 
   set_focus(4);
-  user_print("\nYou will only read this in the screen #4");
+  user_print("\nYou will only read this in screen #4");
+}
+
+void test_write_in_background(){
+
+  user_print("\n\nTesting write in background");
+
+  create_screen(); 
+  create_screen();
+  
+  char *string = "\n\nThis was written in the background";
+
+  write(4, string, strlen(string));
+  set_focus(4);
 }
 
 void user_print(char* s){

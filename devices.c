@@ -67,7 +67,7 @@ int special_action(char *buffer, int i, int size, int *color){
   return size;
 }
 
-int sys_write_console(char *buffer, int size)
+int sys_write_console(char *buffer, int size, int screen_id)
 {
   int i;
   int color = DEFAULT_COLOR;
@@ -81,7 +81,7 @@ int sys_write_console(char *buffer, int size)
       i = special_action(buffer, i+1, size, &color);
     }
     else{
-      printc_with_color(buffer[i], color);
+      printc_with_color(buffer[i], color, screen_id);
     }
   }
   return size;

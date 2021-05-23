@@ -22,9 +22,11 @@
 
 void * get_ebp();
 
+extern int global_screen_id;
+
 int check_fd(int fd, int permissions)
 {
-  if (fd!=1) return -EBADF; 
+  if (fd<1 || fd>global_screen_id) return -EBADF; 
   if (permissions!=ESCRIPTURA) return -EACCES; 
   return 0;
 }
@@ -58,7 +60,7 @@ int sys_create_screen()
 
 int sys_set_focus(int c)
 {
-  return io_set_focus(current(), c);
+  return focus_screen(current(), c);
 }
 
 int global_PID=1000;
@@ -179,13 +181,13 @@ int ret;
 	bytes_left = nbytes;
 	while (bytes_left > TAM_BUFFER) {
 		copy_from_user(buffer, localbuffer, TAM_BUFFER);
-		ret = sys_write_console(localbuffer, TAM_BUFFER);
+		ret = sys_write_console(localbuffer, TAM_BUFFER, fd);
 		bytes_left-=ret;
 		buffer+=ret;
 	}
 	if (bytes_left > 0) {
 		copy_from_user(buffer, localbuffer,bytes_left);
-		ret = sys_write_console(localbuffer, bytes_left);
+		ret = sys_write_console(localbuffer, bytes_left, fd);
 		bytes_left-=ret;
 	}
 	return (nbytes-bytes_left);
