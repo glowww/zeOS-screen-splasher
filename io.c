@@ -13,7 +13,7 @@
 /**************/
 
 global_screen_id = 1;
-Word *physical_screen = 0xb8000;
+Word *physical_screen = (Word *) 0xb8000;
 
 /* Read a byte from 'port' */
 Byte inb (unsigned short port)

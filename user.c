@@ -6,6 +6,17 @@ char buff[24];
 // Screen 1 is the physical one and Screen 2 is the one from the idle process
 #define FIRST_SCREEN 3
 
+
+void test_create_screen();
+void test_set_focus();
+void test_move_cursor();
+void test_del_char();
+void test_colors();
+void test_write_in_background();
+void assert(int bool);
+void user_print(char* s);
+
+
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {

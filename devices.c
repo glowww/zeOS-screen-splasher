@@ -5,7 +5,7 @@
 // Queue for blocked processes in I/O 
 struct list_head blocked;
 
-int to_number(char *c){
+int to_number(char c){
   if (c >= 48 && c <= 57) return c - '0';
   return -1;
 }
