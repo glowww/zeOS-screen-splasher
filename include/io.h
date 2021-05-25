@@ -12,6 +12,7 @@
 #define NUM_COLUMNS 80
 #define NUM_ROWS    25
 #define NUM_SCREENS 10
+#define SCREEN_SIZE NUM_ROWS*NUM_COLUMNS*sizeof(Word) 
 
 #define BLACK_COLOR   0x0000
 #define RED_COLOR     0x0400
@@ -56,6 +57,7 @@ int create_new_screen(struct task_struct *c);
 void delete();
 void move(int x, int y);
 void change_color();
+int switch_task_by_pid(int current_pid, int new_pid);
 struct screen* get_current_screen();
 
 

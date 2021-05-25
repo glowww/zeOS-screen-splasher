@@ -137,10 +137,9 @@ int create_new_screen(struct task_struct *c){
   all_screens[global_screen_id].PID = c->PID;
   all_screens[global_screen_id].x = 0;
   all_screens[global_screen_id].y = 0;
+  all_screens[global_screen_id].content = (pag_logica<<12);
 
   c->screens[empty_screen] = &all_screens[global_screen_id];
-
-  all_screens[global_screen_id].content = (pag_logica<<12);
 
   // Only if it's the first screen ever created
   if (global_screen_id == 2) current_screen = &all_screens[global_screen_id];
@@ -182,28 +181,45 @@ int strlen(char *a)
   return i;
 }
 
-int focus_next_screen()
+int focus_next_screen(struct task_struct *c)
 {
   int focus = current_screen->ID + 1;
 
   if (focus > global_screen_id) focus = 2;
-
-  return focus_screen(focus);
+  
+  return focus_screen(c, focus);
 }
 
-int focus_screen(int screen_id)
+int focus_screen(struct task_struct *c, int screen_id)
 {
-
   if (screen_id > global_screen_id || screen_id < 2) return -ENOENT;
 
+  int current_pid = switch_task_by_pid(c->PID, current_screen->PID);
+
   // Save screen content
-  copy_data(physical_screen, current_screen->content, NUM_ROWS*NUM_COLUMNS*sizeof(Word));
+  copy_data(physical_screen, current_screen->content, SCREEN_SIZE);
 
   // Change focus
   current_screen = &all_screens[screen_id];
 
+  switch_task_by_pid(current_pid, current_screen->PID);
+
   // Load new screen content
-  copy_data(current_screen->content, physical_screen, NUM_ROWS*NUM_COLUMNS*sizeof(Word));
+  copy_data(current_screen->content, physical_screen, SCREEN_SIZE);
 
   return screen_id;
+}
+
+int switch_task_by_pid(int current_pid, int new_pid)
+{
+  if (current_pid == new_pid) return new_pid;
+
+  for (int i=0; i<NR_TASKS; i++){
+    if (task[i].task.PID == new_pid) {
+      set_cr3(get_DIR( &task[i].task));
+      return new_pid;
+    }
+  }
+
+  return -1;
 }

@@ -24,9 +24,7 @@ int __attribute__ ((__section__(".text.main")))
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
   // Change this variable to select a different test
-  int test_selected = 2;
-
-  // fork();
+  int test_selected = 1;
 
   if (test_selected == 1) test_create_screen();
   else if (test_selected == 2) test_set_focus();

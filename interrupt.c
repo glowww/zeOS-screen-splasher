@@ -55,7 +55,7 @@ void keyboard_routine()
   }
   else {
     // Key pressed
-    if (shift_is_pressed && key == 15) focus_next_screen();
+    if (shift_is_pressed && key == 15) focus_next_screen(current());
     else if (key == 42) shift_is_pressed = 1;
     else if (key != 96) printc_xy(current_screen->x, current_screen->y, char_map[key]);
   }
