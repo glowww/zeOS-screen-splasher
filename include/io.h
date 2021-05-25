@@ -58,6 +58,7 @@ void delete();
 void move(int x, int y);
 void change_color();
 int switch_task_by_pid(int current_pid, int new_pid);
+struct task_struct * get_task_by_pid(int pid);
 struct screen* get_current_screen();
 
 

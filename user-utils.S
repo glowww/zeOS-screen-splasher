@@ -75,6 +75,16 @@ ENTRY(set_focus)
 	popl %ebp
 	ret
 
+/* int close(int canal) */
+ENTRY(close)
+	pushl %ebp
+	movl %esp, %ebp
+	movl $23, %eax
+	movl 0x8(%ebp), %ebx;	//canal
+	call syscall_sysenter
+	popl %ebp
+	ret
+
 /* int fork() */
 ENTRY(fork)
 	pushl %ebp

@@ -185,7 +185,15 @@ int focus_next_screen(struct task_struct *c)
 {
   int focus = current_screen->ID + 1;
 
+  while (focus <= global_screen_id && all_screens[focus].ID == -1){
+    focus++;
+  }
+
   if (focus > global_screen_id) focus = 2;
+
+  while (focus <= global_screen_id && all_screens[focus].ID == -1){
+    focus++;
+  }
   
   return focus_screen(c, focus);
 }
@@ -210,16 +218,41 @@ int focus_screen(struct task_struct *c, int screen_id)
   return screen_id;
 }
 
+int close_screen(struct task_struct *c, int screen_id){
+  
+  for(int i = 0; i < SCREENS_PER_TASK; i++){
+    if (c->screens[i]->ID == screen_id){
+      
+      c->screens[i] = NULL;
+      
+      page_table_entry* PT = get_PT(c);
+      free_frame(get_frame(PT, PAG_LOG_INIT_SCREENS+i));
+      del_ss_pag(PT, PAG_LOG_INIT_SCREENS+i);
+
+      all_screens[screen_id].ID  = -1;
+      all_screens[screen_id].PID = -1;
+
+      return 1;
+    }
+  }
+
+  return -ENOENT;
+}
+
+struct task_struct * get_task_by_pid(int pid){
+
+  for (int i=0; i<NR_TASKS; i++){
+    if (task[i].task.PID == pid) return &task[i].task;
+  }
+
+  return -1;
+}
+
 int switch_task_by_pid(int current_pid, int new_pid)
 {
   if (current_pid == new_pid) return new_pid;
 
-  for (int i=0; i<NR_TASKS; i++){
-    if (task[i].task.PID == new_pid) {
-      set_cr3(get_DIR( &task[i].task));
-      return new_pid;
-    }
-  }
+  set_cr3(get_DIR(get_task_by_pid(new_pid)));
 
-  return -1;
+  return new_pid;
 }

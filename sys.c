@@ -63,6 +63,10 @@ int sys_set_focus(int c)
   return focus_screen(current(), c);
 }
 
+int sys_close(int c){
+  return close_screen(current(), c);
+}
+
 int global_PID=1000;
 
 int ret_from_fork()
@@ -134,11 +138,10 @@ int sys_fork(void)
     copy_data((void*)(pag<<12), (void*)((pag+NUM_PAG_DATA)<<12), PAGE_SIZE);
     del_ss_pag(parent_PT, pag+NUM_PAG_DATA);
   }
-
   /* Copy parent's screen content to child. */
-  for (int i = 0; i<SCREENS_PER_TASK; i++)
+  for (pag=PAG_LOG_INIT_SCREENS; pag<PAG_LOG_INIT_SCREENS+SCREENS_PER_TASK; pag++)
   {
-    set_ss_pag(process_PT, PAG_LOG_INIT_SCREENS+i, get_frame(parent_PT, PAG_LOG_INIT_SCREENS+i));
+    set_ss_pag(process_PT, pag, get_frame(parent_PT, pag));
   }
   /* Deny access to the child's memory space */
   set_cr3(get_DIR(current()));

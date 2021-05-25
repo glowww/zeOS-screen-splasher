@@ -24,7 +24,7 @@ int __attribute__ ((__section__(".text.main")))
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
   // Change this variable to select a different test
-  int test_selected = 1;
+  int test_selected = 11;
 
   if (test_selected == 1) test_create_screen();
   else if (test_selected == 2) test_set_focus();
@@ -32,6 +32,10 @@ int __attribute__ ((__section__(".text.main")))
   else if (test_selected == 4) test_del_char();
   else if (test_selected == 5) test_colors();
   else if (test_selected == 6) test_write_in_background();
+  else if (test_selected == 7) test_create_screen_in_threads();
+  else if (test_selected == 8) test_set_focus_from_child();
+  else if (test_selected == 9) test_close_screen();
+  else if (test_selected == 10) test_close_screen_in_threads();
 
   while(1) {}
 }
@@ -119,6 +123,80 @@ void test_write_in_background(){
 
   write(4, string, strlen(string));
   set_focus(4);
+}
+
+void test_create_screen_in_threads(){
+  
+  user_print("\n\nTesting create screens in threads");
+  
+  create_screen();
+
+  if (fork() == 0){
+    create_screen();
+    if (fork() == 0){
+      create_screen();
+      if (fork() == 0){
+        create_screen();
+        if (fork() == 0){
+          create_screen();
+          if (fork() == 0){
+            create_screen();
+            if (fork() == 0){
+              assert(create_screen() == 9);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void test_set_focus_from_child(){
+  
+  user_print("\n\nTesting set focus from child");
+
+  create_screen();
+  create_screen();
+
+  if (fork() == 0){
+    create_screen();
+    set_focus(5);
+    user_print("\nChild process changed focus and wrote this");
+  }
+
+}
+
+void test_close_screen(){
+  
+  user_print("\n\nTesting close screen");
+
+  create_screen();
+  create_screen();
+  create_screen();
+
+  close(4);
+
+  set_focus(3);
+
+  char *string = "\n\nScreen #4 doesn't exist anymore";
+  write(3, string, strlen(string));
+
+  string = "\n\nScreen #3 is right";
+  write(5, string, strlen(string));
+}
+
+void test_close_screen_in_threads(){
+  
+  user_print("\n\nTesting close screen in threads");
+
+  create_screen();
+  create_screen();
+
+  if (fork() == 0){
+    close(4);
+    set_focus(create_screen());
+    user_print("\nChild process killed screen #4 :(");
+  }
 }
 
 void user_print(char* s){

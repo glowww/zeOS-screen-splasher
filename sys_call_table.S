@@ -25,7 +25,7 @@ ENTRY (sys_call_table)
 	.long sys_getpid	//20	
 	.long sys_create_screen	//21
 	.long sys_set_focus	//22
-	.long sys_ni_syscall	//23
+	.long sys_close	//23
 	.long sys_ni_syscall	//24
 	.long sys_ni_syscall	//25
 	.long sys_ni_syscall	//26
