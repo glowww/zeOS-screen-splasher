@@ -168,8 +168,6 @@ void init_idle (void)
 
   c->total_quantum=DEFAULT_QUANTUM;
 
-  create_new_screen(c);
-
   init_stats(&c->p_stats);
 
   allocate_DIR(c);
@@ -197,8 +195,6 @@ void init_task1(void)
 
   c->state=ST_RUN;
 
-  create_new_screen(c);
-
   remaining_quantum=c->total_quantum;
 
   init_stats(&c->p_stats);
@@ -211,6 +207,17 @@ void init_task1(void)
   setMSR(0x175, 0, (unsigned long)&(uc->stack[KERNEL_STACK_SIZE]));
 
   set_cr3(c->dir_pages_baseAddr);
+
+  create_screen_x(c);
+}
+
+void create_screen_x(struct task_struct *c){
+  int pag = alloc_frame();
+  int pag_logica = PAG_LOG_INIT_DATA + NUM_PAG_DATA + 20;
+  page_table_entry* PT = get_PT(c);
+  set_ss_pag(PT, pag_logica, pag);
+  PT[pag_logica].bits.user = 0;
+  create_new_screen(c, pag_logica<<12);
 }
 
 void init_freequeue()

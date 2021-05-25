@@ -23,11 +23,14 @@
 #define WHITE_COLOR   0x0700
 #define DEFAULT_COLOR GREEN_COLOR
 
+
+typedef Word screen_content[NUM_COLUMNS*NUM_ROWS];
+
 struct screen {
   int ID;			/* Screen ID. This MUST be the first field of the struct. */
   int PID;
   Byte x, y;
-  Word *content[NUM_COLUMNS*NUM_ROWS];
+  void* content;
 };
 
 struct screen* current_screen;
@@ -49,7 +52,7 @@ void move_x(int x);
 void move_y(int y);
 
 void add_screen_info(struct screen *screen);
-int create_new_screen(struct task_struct *c);
+int create_new_screen(struct task_struct *c, int content_addr);
 void delete();
 void move(int x, int y);
 void change_color();

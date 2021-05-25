@@ -7,6 +7,7 @@
 #include <sched.h>
 #include <errno.h>
 #include <libc.h>
+#include <mm.h>
 
 /**************/
 /** Screen  ***/
@@ -110,10 +111,11 @@ void move_y(int y)
   if (current_screen->y < 0) current_screen->y = 0;
 }
 
-int create_new_screen(struct task_struct *c){
+
+int create_new_screen(struct task_struct *c, int content_addr){
 
   int empty_screen = -1;
-  for(int i = 0; i < 10 && empty_screen == -1; i++){
+  for(int i = 0; i < SCREENS_PER_TASK && empty_screen == -1; i++){
     if (c->screens[i] == NULL) empty_screen = i;
   }
   
@@ -128,6 +130,8 @@ int create_new_screen(struct task_struct *c){
 
   // TODO: Store it in the process and reference it from all_screens
   c->screens[empty_screen] = &all_screens[global_screen_id];
+
+  all_screens[global_screen_id].content = content_addr;
 
   // Only if it's the first screen ever created
   if (global_screen_id == 2) current_screen = &all_screens[global_screen_id];
@@ -169,47 +173,28 @@ int strlen(char *a)
   return i;
 }
 
-int focus_next_screen(struct task_struct *c)
+int focus_next_screen()
 {
-  int focus = 0;
-  int num_of_screens = sizeof c->screens / sizeof *c->screens;
+  int focus = current_screen->ID + 1;
 
-  for(int i = 0; i < num_of_screens && focus == 0; i++){
-    if (c->screens[i] && c->screens[i]->ID == current_screen->ID) focus = i;
-  }
+  if (focus > global_screen_id) focus = 2;
 
-  for(int i = focus+1; i < num_of_screens; i++){
-    if (c->screens[i] && c->screens[i]->ID){
-      return focus_screen(c, c->screens[i]->ID);
-    }
-  }
-  for(int i = 0; i < focus; i++){
-    if (c->screens[i] && c->screens[i]->ID){
-      return focus_screen(c, c->screens[i]->ID);
-    }
-  }
+  return focus_screen(focus);
 }
 
-int focus_screen(struct task_struct *t, int c)
+int focus_screen(int screen_id)
 {
-  for(int i = 0; i < NUM_SCREENS; i++)
-  {
-    if ( all_screens[i].PID == t->PID &&
-        (c > global_screen_id && all_screens[i].ID > 0 || all_screens[i].ID == c)
-      ) 
-    {
-      // Save screen content
-      copy_data(physical_screen, current_screen->content, sizeof(current_screen->content));
 
-      // Change focus
-      current_screen = &all_screens[i];
+  if (screen_id > global_screen_id || screen_id < 2) return -ENOENT;
 
-      // Load new screen content
-      copy_data(current_screen->content, physical_screen, sizeof(current_screen->content));
+  // Save screen content
+  copy_data(physical_screen, current_screen->content, NUM_ROWS*NUM_COLUMNS*sizeof(Word));
 
-      return c;
-    }
-  }
+  // Change focus
+  current_screen = &all_screens[screen_id];
 
-	return -ENOENT;
+  // Load new screen content
+  copy_data(current_screen->content, physical_screen, NUM_ROWS*NUM_COLUMNS*sizeof(Word));
+
+  return screen_id;
 }

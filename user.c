@@ -3,8 +3,8 @@
 
 char buff[24];
 
-// Screen 1 is the physical one and Screen 2 is the one from the idle process
-#define FIRST_SCREEN 3
+// Screen 1 is the physical one and Screen 2 is the one from the init process
+#define FIRST_SCREEN 2
 
 
 void test_create_screen();
@@ -26,6 +26,8 @@ int __attribute__ ((__section__(".text.main")))
   // Change this variable to select a different test
   int test_selected = 6;
 
+  // fork();
+
   if (test_selected == 1) test_create_screen();
   else if (test_selected == 2) test_set_focus();
   else if (test_selected == 3) test_move_cursor();
@@ -38,7 +40,8 @@ int __attribute__ ((__section__(".text.main")))
 
 void test_del_char()
 {
-  set_focus(FIRST_SCREEN);
+  create_screen();
+  set_focus(3);
   user_print("\n\n");
 
   char* hidden = "You will never see this.";
@@ -53,7 +56,8 @@ void test_del_char()
 
 void test_colors()
 {
-  set_focus(FIRST_SCREEN);
+  create_screen();
+  set_focus(3);
   user_print("\n\n\033[31mT\033[32me\033[33ms\033[34mt\033[35mi\033[36mn\033[37mg \033[31mc\033[32mo\033[33ml\033[34mo\033[35mr\033[36ms\n\n");
 
   user_print("\033[37m BLACK   RED   GREEN ORANGE  BLUE  MAGENTA CYAN  WHITE  DEFAULT  \n");
@@ -70,7 +74,8 @@ void test_colors()
 
 void test_move_cursor()
 {
-  set_focus(FIRST_SCREEN);
+  create_screen();
+  set_focus(3);
   user_print("\n\nTesting move cursor");
 
   user_print("\033[2;6HA\033[3;7HB\033[4;8HC");
@@ -84,7 +89,7 @@ void test_create_screen()
   user_print("\n\nTesting create screen");
 
   int new_screens = 6;
-  int number_of_screens = 3;
+  int number_of_screens = 2;
   int expected = number_of_screens + new_screens;
 
   for(int i = 0; i < new_screens; i++){

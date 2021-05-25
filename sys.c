@@ -55,12 +55,30 @@ extern int global_screen_id;
 
 int sys_create_screen()
 {
-  return create_new_screen(current());
+  struct task_struct *t = current();
+
+  int pag = alloc_frame();
+  if (pag == -1) return -ENOMEM;
+
+  int empty_screen = -1;
+  for(int i = 0; i < SCREENS_PER_TASK && empty_screen == -1; i++){
+    if (t->screens[i] == NULL) empty_screen = i;
+  }
+
+  int pag_logica = PAG_LOG_INIT_DATA + NUM_PAG_DATA + 20 + empty_screen + 1;
+
+  page_table_entry* PT = get_PT(t);
+
+  set_ss_pag(PT, pag_logica, pag);
+
+  PT[pag_logica].bits.user = 0;
+
+  return create_new_screen(t, pag_logica<<12);
 }
 
 int sys_set_focus(int c)
 {
-  return focus_screen(current(), c);
+  return focus_screen(c);
 }
 
 int global_PID=1000;

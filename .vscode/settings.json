@@ -9,6 +9,7 @@
         "ostream": "cpp",
         "streambuf": "cpp",
         "types.h": "c",
-        "io.h": "c"
+        "io.h": "c",
+        "random": "c"
     }
 }
