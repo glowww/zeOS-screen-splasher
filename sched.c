@@ -208,16 +208,7 @@ void init_task1(void)
 
   set_cr3(c->dir_pages_baseAddr);
 
-  create_screen_x(c);
-}
-
-void create_screen_x(struct task_struct *c){
-  int pag = alloc_frame();
-  int pag_logica = PAG_LOG_INIT_DATA + NUM_PAG_DATA + 20;
-  page_table_entry* PT = get_PT(c);
-  set_ss_pag(PT, pag_logica, pag);
-  PT[pag_logica].bits.user = 0;
-  create_new_screen(c, pag_logica<<12);
+  create_new_screen(c);
 }
 
 void init_freequeue()

@@ -24,7 +24,7 @@ int __attribute__ ((__section__(".text.main")))
      /* __asm__ __volatile__ ("mov %0, %%cr3"::"r" (0) ); */
 
   // Change this variable to select a different test
-  int test_selected = 6;
+  int test_selected = 2;
 
   // fork();
 

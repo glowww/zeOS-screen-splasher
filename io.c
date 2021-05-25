@@ -112,7 +112,7 @@ void move_y(int y)
 }
 
 
-int create_new_screen(struct task_struct *c, int content_addr){
+int create_new_screen(struct task_struct *c){
 
   int empty_screen = -1;
   for(int i = 0; i < SCREENS_PER_TASK && empty_screen == -1; i++){
@@ -121,6 +121,16 @@ int create_new_screen(struct task_struct *c, int content_addr){
   
   if (empty_screen == -1) return -ENOMEM;
 
+  int pag = alloc_frame();
+  if (pag == -1) return -ENOMEM;
+
+  int pag_logica = PAG_LOG_INIT_DATA + NUM_PAG_DATA + 20 + empty_screen;
+
+  page_table_entry* PT = get_PT(c);
+  set_ss_pag(PT, pag_logica, pag);
+
+  PT[pag_logica].bits.user = 0;
+
   ++global_screen_id;
 
   all_screens[global_screen_id].ID = global_screen_id;
@@ -128,10 +138,9 @@ int create_new_screen(struct task_struct *c, int content_addr){
   all_screens[global_screen_id].x = 0;
   all_screens[global_screen_id].y = 0;
 
-  // TODO: Store it in the process and reference it from all_screens
   c->screens[empty_screen] = &all_screens[global_screen_id];
 
-  all_screens[global_screen_id].content = content_addr;
+  all_screens[global_screen_id].content = (pag_logica<<12);
 
   // Only if it's the first screen ever created
   if (global_screen_id == 2) current_screen = &all_screens[global_screen_id];

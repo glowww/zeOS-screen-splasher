@@ -52,7 +52,7 @@ void move_x(int x);
 void move_y(int y);
 
 void add_screen_info(struct screen *screen);
-int create_new_screen(struct task_struct *c, int content_addr);
+int create_new_screen(struct task_struct *c);
 void delete();
 void move(int x, int y);
 void change_color();
