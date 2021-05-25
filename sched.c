@@ -10,6 +10,7 @@
 #include <io.h>
 #include <utils.h>
 #include <p_stats.h>
+#include <errno.h>
 
 /**
  * Container for the Task array and 2 additional pages (the first and the last one)
@@ -265,4 +266,13 @@ void force_task_switch()
   update_process_state_rr(current(), &readyqueue);
 
   sched_next_rr();
+}
+
+struct task_struct * get_task_by_pid(int pid){
+
+  for (int i=0; i<NR_TASKS; i++){
+    if (task[i].task.PID == pid) return &task[i].task;
+  }
+
+  return -ESRCH;
 }

@@ -84,33 +84,35 @@ void printk_screen(char *string, int screen_id)
   for (int i = 0; string[i]; i++) printc(string[i], screen_id);
 }
 
-void delete()
+void delete(int screen_id)
 {
-  move(-1, 0);
-  printc(NULL, 0);
-  move(-1, 0);
+  move(-1, 0, screen_id);
+  printc(NULL, screen_id);
+  move(-1, 0, screen_id);
 }
 
-void move(int x, int y)
+void move(int x, int y, int screen_id)
 {
-  move_x(current_screen->x + x);
-  move_y(current_screen->y + y);
+  struct screen *screen = get_screen(screen_id);
+  move_x_to(screen_id, screen->x+x);
+  move_y_to(screen_id, screen->y+y);
 }
 
-void move_x(int x)
+void move_x_to(int screen_id, int x)
 {
-  current_screen->x = x;
-  if (current_screen->x >= NUM_COLUMNS) current_screen->x = NUM_COLUMNS - 1;
-  if (current_screen->x < 0) current_screen->x = 0;
+  struct screen *screen = get_screen(screen_id);
+  screen->x = x;
+  if (screen->x >= NUM_COLUMNS) screen->x = NUM_COLUMNS - 1;
+  if (screen->x < 0) screen->x = 0;
 }
 
-void move_y(int y)
+void move_y_to(int screen_id, int y)
 {
-  current_screen->y = y;
-  if (current_screen->y >= NUM_ROWS) current_screen->y = NUM_ROWS - 1;
-  if (current_screen->y < 0) current_screen->y = 0;
+  struct screen *screen = get_screen(screen_id);
+  screen->y = y;
+  if (screen->y >= NUM_ROWS) screen->y = NUM_ROWS - 1;
+  if (screen->y < 0) screen->y = 0;
 }
-
 
 int create_new_screen(struct task_struct *c){
 
@@ -118,7 +120,6 @@ int create_new_screen(struct task_struct *c){
   for(int i = 0; i < SCREENS_PER_TASK && empty_screen == -1; i++){
     if (c->screens[i] == NULL) empty_screen = i;
   }
-  
   if (empty_screen == -1) return -ENOMEM;
 
   int pag = alloc_frame();
@@ -239,15 +240,6 @@ int close_screen(struct task_struct *c, int screen_id){
   return -ENOENT;
 }
 
-struct task_struct * get_task_by_pid(int pid){
-
-  for (int i=0; i<NR_TASKS; i++){
-    if (task[i].task.PID == pid) return &task[i].task;
-  }
-
-  return -1;
-}
-
 int switch_task_by_pid(int current_pid, int new_pid)
 {
   if (current_pid == new_pid) return new_pid;
@@ -255,4 +247,10 @@ int switch_task_by_pid(int current_pid, int new_pid)
   set_cr3(get_DIR(get_task_by_pid(new_pid)));
 
   return new_pid;
+}
+
+struct screen * get_screen(int screen_id){
+
+  if (screen_id <= 1) return current_screen;
+  return &all_screens[screen_id];
 }

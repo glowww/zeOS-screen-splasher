@@ -49,17 +49,16 @@ void printc_xy(Byte x, Byte y, char c);
 void printk(char *string);
 void printk_screen(char *string, int screen_id);
 void break_line(struct screen* screen);
-void move_x(int x);
-void move_y(int y);
+void move_x_to(int screen_id, int x);
+void move_y_to(int screen_id, int y);
 
 void add_screen_info(struct screen *screen);
 int create_new_screen(struct task_struct *c);
-void delete();
-void move(int x, int y);
+void delete(int screen_id);
+void move(int x, int y, int screen_id);
 void change_color();
 int switch_task_by_pid(int current_pid, int new_pid);
-struct task_struct * get_task_by_pid(int pid);
-struct screen* get_current_screen();
+struct screen * get_screen(int screen_id);
 
 
 #endif  /* __IO_H__ */

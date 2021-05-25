@@ -80,4 +80,6 @@ void update_sched_data_rr();
 
 void init_stats(struct stats *s);
 
+struct task_struct * get_task_by_pid(int pid);
+
 #endif  /* __SCHED_H__ */

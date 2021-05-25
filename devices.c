@@ -24,7 +24,7 @@ int to_color(char c){
   return DEFAULT_COLOR;
 }
 
-int special_action(char *buffer, int i, int size, int *color){
+int special_action(char *buffer, int i, int size, int *color, int screen_id){
 
   i++; // Skip "["
 
@@ -53,11 +53,11 @@ int special_action(char *buffer, int i, int size, int *color){
     }
     else {
       if (buffer[i] == ';'){
-        move_x(pos);
+        move_x_to(screen_id, pos);
         pos = 0;
       }
       else if (buffer[i] == 'H'){
-        move_y(pos);
+        move_y_to(screen_id, pos);
         return i;
       }
       else return i;
@@ -75,10 +75,10 @@ int sys_write_console(char *buffer, int size, int screen_id)
   for (i=0; i<size; i++){
     
     if (buffer[i] == '\177'){
-      delete();
+      delete(screen_id);
     }
     else if (buffer[i] == '\033'){
-      i = special_action(buffer, i+1, size, &color);
+      i = special_action(buffer, i+1, size, &color, screen_id);
     }
     else{
       printc_with_color(buffer[i], color, screen_id);
