@@ -1,11 +1,8 @@
 #include <libc.h>
 #include <io.h>
 
-char buff[24];
-
 // Screen 1 is the physical one and Screen 2 is the one from the init process
 #define FIRST_SCREEN 2
-
 
 void test_create_screen();
 void test_set_focus();
