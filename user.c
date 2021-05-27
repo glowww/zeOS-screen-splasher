@@ -13,6 +13,10 @@ void test_move_cursor();
 void test_del_char();
 void test_colors();
 void test_write_in_background();
+void test_create_screen_in_threads();
+void test_set_focus_from_child();
+void test_close_screen();
+void test_close_screen_in_threads();
 void assert(int bool);
 void user_print(char* s);
 
