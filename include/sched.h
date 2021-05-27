@@ -9,6 +9,7 @@
 #include <types.h>
 #include <mm_address.h>
 #include <stats.h>
+#include <io.h>
 
 
 #define NR_TASKS      10
@@ -78,5 +79,7 @@ int needs_sched_rr();
 void update_sched_data_rr();
 
 void init_stats(struct stats *s);
+
+struct task_struct * get_task_by_pid(int pid);
 
 #endif  /* __SCHED_H__ */

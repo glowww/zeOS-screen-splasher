@@ -22,9 +22,11 @@
 
 void * get_ebp();
 
+extern int global_screen_id;
+
 int check_fd(int fd, int permissions)
 {
-  if (fd!=1) return -EBADF; 
+  if (fd<1 || fd>global_screen_id) return -EBADF; 
   if (permissions!=ESCRIPTURA) return -EACCES; 
   return 0;
 }
@@ -58,7 +60,11 @@ int sys_create_screen()
 
 int sys_set_focus(int c)
 {
-  return io_set_focus(current(), c);
+  return focus_screen(current(), c);
+}
+
+int sys_close(int c){
+  return close_screen(current(), c);
 }
 
 int global_PID=1000;
@@ -132,6 +138,11 @@ int sys_fork(void)
     copy_data((void*)(pag<<12), (void*)((pag+NUM_PAG_DATA)<<12), PAGE_SIZE);
     del_ss_pag(parent_PT, pag+NUM_PAG_DATA);
   }
+  /* Copy parent's screen content to child. */
+  for (pag=PAG_LOG_INIT_SCREENS; pag<PAG_LOG_INIT_SCREENS+SCREENS_PER_TASK; pag++)
+  {
+    set_ss_pag(process_PT, pag, get_frame(parent_PT, pag));
+  }
   /* Deny access to the child's memory space */
   set_cr3(get_DIR(current()));
 
@@ -179,18 +190,17 @@ int ret;
 	bytes_left = nbytes;
 	while (bytes_left > TAM_BUFFER) {
 		copy_from_user(buffer, localbuffer, TAM_BUFFER);
-		ret = sys_write_console(localbuffer, TAM_BUFFER);
+		ret = sys_write_console(localbuffer, TAM_BUFFER, fd);
 		bytes_left-=ret;
 		buffer+=ret;
 	}
 	if (bytes_left > 0) {
 		copy_from_user(buffer, localbuffer,bytes_left);
-		ret = sys_write_console(localbuffer, bytes_left);
+		ret = sys_write_console(localbuffer, bytes_left, fd);
 		bytes_left-=ret;
 	}
 	return (nbytes-bytes_left);
 }
-
 
 extern int zeos_ticks;
 

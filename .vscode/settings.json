@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "*.pl": "prolog",
+        "*.tcc": "cpp",
+        "exception": "cpp",
+        "memory_resource": "cpp",
+        "iosfwd": "cpp",
+        "new": "cpp",
+        "ostream": "cpp",
+        "streambuf": "cpp",
+        "types.h": "c",
+        "io.h": "c",
+        "random": "c"
+    }
+}

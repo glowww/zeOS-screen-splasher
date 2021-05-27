@@ -72,8 +72,10 @@ int __attribute__((__section__(".text.main")))
 
   /*** DO *NOT* ADD ANY CODE IN THIS ROUTINE BEFORE THIS POINT ***/
 
+  current_screen->x=0;
+  current_screen->y=19;
+  
   printk("Kernel Loaded!    ");
-
 
   /* Initialize hardware data */
   setGdt(); /* Definicio de la taula de segments de memoria */
@@ -98,6 +100,8 @@ int __attribute__((__section__(".text.main")))
   /* Move user code/data now (after the page table initialization) */
   copy_data((void *) KERNEL_START + *p_sys_size, usr_main, *p_usr_size);
 
+  current_screen->x=0;
+  current_screen->y=20;
 
   printk("Entering user mode...");
 

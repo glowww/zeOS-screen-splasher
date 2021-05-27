@@ -22,7 +22,9 @@ int getpid();
 
 int create_screen();
 
-int set_focus();
+int set_focus(int c);
+
+int close(int c);
 
 int fork();
 

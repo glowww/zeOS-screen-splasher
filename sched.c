@@ -10,6 +10,7 @@
 #include <io.h>
 #include <utils.h>
 #include <p_stats.h>
+#include <errno.h>
 
 /**
  * Container for the Task array and 2 additional pages (the first and the last one)
@@ -168,8 +169,6 @@ void init_idle (void)
 
   c->total_quantum=DEFAULT_QUANTUM;
 
-  create_new_screen(c);
-
   init_stats(&c->p_stats);
 
   allocate_DIR(c);
@@ -197,8 +196,6 @@ void init_task1(void)
 
   c->state=ST_RUN;
 
-  create_new_screen(c);
-
   remaining_quantum=c->total_quantum;
 
   init_stats(&c->p_stats);
@@ -211,6 +208,8 @@ void init_task1(void)
   setMSR(0x175, 0, (unsigned long)&(uc->stack[KERNEL_STACK_SIZE]));
 
   set_cr3(c->dir_pages_baseAddr);
+
+  create_new_screen(c);
 }
 
 void init_freequeue()
@@ -267,4 +266,13 @@ void force_task_switch()
   update_process_state_rr(current(), &readyqueue);
 
   sched_next_rr();
+}
+
+struct task_struct * get_task_by_pid(int pid){
+
+  for (int i=0; i<NR_TASKS; i++){
+    if (task[i].task.PID == pid) return &task[i].task;
+  }
+
+  return -ESRCH;
 }
